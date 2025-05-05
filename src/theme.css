@@ -1,0 +1,22 @@
+/* src/theme.css */
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Mode sombre */
+.dark body {
+  background-color: #111827;
+  color: #e5e7eb;
+}
+
+/* Boutons améliorés */
+.btn {
+  @apply px-4 py-2 rounded font-semibold transition;
+}
+.btn-primary {
+  @apply bg-indigo-600 hover:bg-indigo-700 text-white;
+}
+.btn-secondary {
+  @apply bg-gray-200 hover:bg-gray-300 text-gray-800;
+}
