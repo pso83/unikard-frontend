@@ -30,6 +30,8 @@ export default function CommerceSettings() {
     }
   }, [token]);
 
+  console.log("Token utilisé :", token);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setCommerce({ ...commerce, [name]: value });
