@@ -1,50 +1,69 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useEffect, useState } from "react";
+import axios from "axios";
 
-export default function AssignUser() {
+export default function AssignUserForm() {
   const [users, setUsers] = useState([]);
-  const [selectedUserId, setSelectedUserId] = useState(null);
-  const [message, setMessage] = useState('');
+  const [selectedUserId, setSelectedUserId] = useState("");
+  const [message, setMessage] = useState("");
 
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
-    axios.get('http://localhost:5000/users')
-      .then(res => {
-        const nonMerchants = res.data.filter(u => !u.is_merchant);
-        setUsers(nonMerchants);
+    axios
+      .get("http://localhost:5000/users", {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        const filtered = res.data.filter((u) => !u.is_merchant);
+        setUsers(filtered);
       });
-  }, []);
+  }, [token]);
 
-  const assignUser = () => {
-    axios.post('http://localhost:5000/assign_user', { user_id: selectedUserId }, {
-      headers: { Authorization: `Bearer ${token}` }
-    }).then(res => {
-      setMessage(res.data.message);
-    }).catch(err => {
-      setMessage(err.response?.data?.error || 'Erreur');
-    });
+  const handleAssign = async () => {
+    if (!selectedUserId) return;
+
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/assign_user_to_commerce",
+        { user_id: selectedUserId, commerce_id: null }, // null côté backend => il utilise get_jwt_identity
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setMessage(res.data.message || "Utilisateur assigné.");
+      setTimeout(() => setMessage(""), 3000);
+    } catch (err) {
+      console.error("Erreur assignation :", err);
+      setMessage("❌ Erreur lors de l’assignation.");
+    }
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 p-4 rounded shadow">
-      <h3 className="text-lg font-bold mb-4 text-gray-900 dark:text-white">Assigner un client à ce commerce</h3>
+    <div className="mt-8 space-y-4">
+      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+        👤 Assigner un client à ce commerce
+      </h3>
       <select
+        value={selectedUserId}
         onChange={(e) => setSelectedUserId(e.target.value)}
-        className="p-2 border rounded w-full mb-4"
+        className="w-full p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white"
       >
-        <option value="">-- Sélectionner un utilisateur --</option>
+        <option value="">-- Sélectionner un client --</option>
         {users.map((u) => (
-          <option key={u.id} value={u.id}>{u.name} - {u.email}</option>
+          <option key={u.id} value={u.id}>
+            {u.name} ({u.email})
+          </option>
         ))}
       </select>
       <button
-        onClick={assignUser}
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+        onClick={handleAssign}
+        className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded"
       >
-        Assigner
+        🔗 Assigner
       </button>
-      {message && <p className="mt-4 text-green-500">{message}</p>}
+      {message && (
+        <p className="text-sm mt-2 text-gray-900 dark:text-gray-300">{message}</p>
+      )}
     </div>
   );
 }

@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import AssignUserForm from './AssignUser';
@@ -8,7 +7,6 @@ export default function CommerceSettings() {
   const [commerce, setCommerce] = useState(null);
   const [loading, setLoading] = useState(true);
   const [success, setSuccess] = useState(false);
-  const [createLoading, setCreateLoading] = useState(false);
   const [createMessage, setCreateMessage] = useState('');
 
   const token = localStorage.getItem('token');
@@ -49,22 +47,21 @@ export default function CommerceSettings() {
   };
 
   const handleCreateCommerce = async () => {
-    const token = localStorage.getItem("token");
     setCreateMessage("");
 
     try {
       const res = await fetch("http://localhost:5000/commerce/create", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify({}) // <-- important sinon content-length = 0
-    });
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({}) // important pour éviter content-length: 0
+      });
 
       if (res.ok) {
         setCreateMessage("✅ Commerce créé !");
-        setTimeout(() => window.location.reload(), 1000);  // rafraîchir les infos
+        setTimeout(() => window.location.reload(), 1000);
       } else {
         const data = await res.json();
         console.error("Erreur API :", data);
@@ -103,7 +100,7 @@ export default function CommerceSettings() {
               value={commerce.name || ''}
               onChange={handleChange}
               placeholder="Nom du commerce"
-              className="input"
+              className="w-full p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white"
             />
             <input
               type="text"
@@ -111,7 +108,7 @@ export default function CommerceSettings() {
               value={commerce.type || ''}
               onChange={handleChange}
               placeholder="Type de commerce"
-              className="input"
+              className="w-full p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white"
             />
             <input
               type="text"
@@ -119,7 +116,7 @@ export default function CommerceSettings() {
               value={commerce.address || ''}
               onChange={handleChange}
               placeholder="Adresse"
-              className="input"
+              className="w-full p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white"
             />
             <input
               type="text"
@@ -127,7 +124,7 @@ export default function CommerceSettings() {
               value={commerce.phone || ''}
               onChange={handleChange}
               placeholder="Téléphone"
-              className="input"
+              className="w-full p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white"
             />
             <input
               type="email"
@@ -135,7 +132,7 @@ export default function CommerceSettings() {
               value={commerce.email || ''}
               onChange={handleChange}
               placeholder="Email"
-              className="input"
+              className="w-full p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white"
             />
             <input
               type="text"
@@ -143,7 +140,7 @@ export default function CommerceSettings() {
               value={commerce.hours || ''}
               onChange={handleChange}
               placeholder="Horaires d’ouverture"
-              className="input"
+              className="w-full p-2 border rounded bg-white text-black dark:bg-gray-800 dark:text-white"
             />
 
             <button
@@ -155,6 +152,7 @@ export default function CommerceSettings() {
 
             {success && <p className="text-green-500">✅ Commerce mis à jour avec succès !</p>}
           </form>
+
           <AssignUserForm />
           <AssignedUsersList />
         </>
